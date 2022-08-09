@@ -1,0 +1,19 @@
+{
+  "name": "attendance-api-server",
+  "version": "1.0.0",
+  "description": "Attendance API Server using ExpressJS",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NanobyteRuata/attendance-api-server.git"
+  },
+  "author": "NanobyteRuata",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NanobyteRuata/attendance-api-server/issues"
+  },
+  "homepage": "https://github.com/NanobyteRuata/attendance-api-server#readme"
+}
