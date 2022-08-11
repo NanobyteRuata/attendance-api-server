@@ -1,21 +1,58 @@
 import express from "express";
 import cors from "cors";
-import restaurantRoutes from "./routes/restaurants.route.js";
+import mongoose from "mongoose";
+import bodyParser from "body-parser";
+import jsonwebtoken from "jsonwebtoken";
+
+import "./models/index.js";
+import routes from "./routes/index.js";
 
 const app = express();
 
 app.use(cors());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(restaurantRoutes);
+
+const option = {
+  socketTimeoutMS: 30000,
+  keepAlive: true,
+};
+
+try {
+  await mongoose.connect(process.env.ATLAS_URI, option);
+  console.log("Successfully connected to the database!");
+} catch (err) {
+  console.log("Error connecting the database!\n", err);
+  process.exit();
+}
+
+app.use(function (req, res, next) {
+  if (
+    req.headers &&
+    req.headers.authorization &&
+    req.headers.authorization.split(" ")[0] === "JWT"
+  ) {
+    jsonwebtoken.verify(
+      req.headers.authorization.split(" ")[1],
+      process.env.JWT_SECRET_KEY,
+      function (err, decode) {
+        if (err) req.user = undefined;
+        req.user = decode;
+        next();
+      }
+    );
+  } else {
+    req.user = undefined;
+    next();
+  }
+});
+
+for (let route of routes) {
+  app.use(route);
+}
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
-});
-
-// Global error handling
-app.use(function (err, _req, res) {
-  console.error(err.stack);
-  res.status(500).send("Something broke!");
 });
 
 export default app;
